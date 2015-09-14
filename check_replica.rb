@@ -24,7 +24,7 @@ resp.db_instances.each do |r|
           cmd = "/usr/bin/mysql -u #{ENV['BDASH_OPT_DB_USERNAME']} -p#{ENV['BDASH_OPT_DB_PASSWORD']} -h #{addr} -P #{port} -e \"show status like 'Threads_connected'\"  | grep Threads_connected | awk '{print $2}'"
           res = `#{cmd}`
           res.strip!
-          if min_value > res.to_i
+          if min_value > res.to_i and res.to_i != 0
             min_value = res.to_i
             ret = "#{addr}:#{port}"
           end
