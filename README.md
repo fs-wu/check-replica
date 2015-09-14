@@ -1,6 +1,6 @@
 # check-replica
 
-* ENV NEED:
+ENV NEED:
 *  ENV['AWS_REGION']
 *  ENV['BDASH_OPT_DB_HOST']
 *  ENV['BDASH_OPT_DB_USERNAME']
