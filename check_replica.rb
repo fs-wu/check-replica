@@ -1,5 +1,4 @@
 require 'aws-sdk'
-require 'mysql2'
 
 # ENV NEED:
 #  ENV['AWS_REGION']
@@ -22,15 +21,13 @@ resp.db_instances.each do |r|
         if res1.db_instances.size >= 1 and res1.db_instances[0].endpoint != nil then
           addr = res1.db_instances[0].endpoint.address
           port = res1.db_instances[0].endpoint.port
-          my = Mysql2::Client.new(:host=> addr, :port=>port, :username=> ENV['BDASH_OPT_DB_USERNAME'], :password=>ENV['BDASH_OPT_DB_PASSWORD'], :database=> ENV['BDASH_OPT_DB_NAME'])
-          res = my.query("show status like 'Threads_connected'")
-          res.each do |row|
-            if min_value > row["Value"].to_i
-              min_value = row["Value"].to_i
-              ret = "#{addr}:#{port}"
-            end
+          cmd = "/usr/bin/mysql -u #{ENV['BDASH_OPT_DB_USERNAME']} -p#{ENV['BDASH_OPT_DB_PASSWORD']} -h #{addr} -P #{port} -e \"show status like 'Threads_connected'\"  | grep Threads_connected | awk '{print $2}'"
+          res = `#{cmd}`
+          res.strip!
+          if min_value > res.to_i
+            min_value = res.to_i
+            ret = "#{addr}:#{port}"
           end
-          my.close
         end
       end
     end
